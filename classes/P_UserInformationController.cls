@@ -5,8 +5,8 @@ public with sharing class P_UserInformationController {
             Map<String, String> userInfo = getUserInfo();
 
             return new Map<String, Object> {
-                'userInfo' => userInfo,
-                'account'  => getAccountInfo(userInfo.get('AccountId'))
+                'userInfo' => userInfo
+                // 'account'  => getAccountInfo(userInfo.get('AccountId'))
             };
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
@@ -21,6 +21,7 @@ public with sharing class P_UserInformationController {
             User u = [SELECT FirstName, LastName, Username, Email, Contact.AccountId FROM User WHERE Id = :System.UserInfo.getUserId()];
 
             result.putAll(new Map<String, String>{
+                'Id'        => u.Id,
                 'FirstName' => u.FirstName,
                 'LastName'  => u.LastName,
                 'Username'  => u.Username,

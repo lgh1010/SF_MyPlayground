@@ -1,0 +1,68 @@
+<aura:component implements="flexipage:availableForAllPageTypes"
+                controller="P_UserInformationController">
+
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+
+    <aura:attribute name="userInfo" type="Object"/>
+    <aura:attribute name="contactInfo" type="Object"/>
+    <aura:attribute name="accountInfo" type="Object"/>
+
+    <lightning:card title="User Information">
+        <!-- <p class="slds-p-horizontal_small">
+            <h5>Name : {!v.userInfo.FirstName}&nbsp;{!v.userInfo.LastName}</h5>
+            <h5>Username : {!v.userInfo.Username}</h5>
+            <h5>Email : {!v.userInfo.Email}</h5>
+        </p> -->
+        <lightning:accordion allowMultipleSectionsOpen="true" activeSectionName="section_user">
+            <lightning:accordionSection name="section_user" label="User">
+                <div>
+                    <lightning:recordViewForm recordId="{!v.userInfo.Id}" objectApiName="User" density="comfy">
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="12">
+                                <lightning:outputField fieldName="Name"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="12">
+                                <lightning:outputField fieldName="Username"/>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </lightning:recordViewForm>
+                </div>
+            </lightning:accordionSection>
+            <lightning:accordionSection name="section_contact" label="Contact">
+                <div>
+                    <lightning:recordViewForm recordId="0035j000009vpZDAAY" objectApiName="Contact" density="comfy">
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="12">
+                                <lightning:outputField fieldName="Phone"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="12">
+                                <lightning:outputField fieldName="Fax"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="12">
+                                <lightning:outputField fieldName="Email"/>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </lightning:recordViewForm>
+                </div>
+            </lightning:accordionSection>
+            <lightning:accordionSection name="section_account" label="Account">
+                <div>
+                    <lightning:recordViewForm recordId="0015j00000Choh6AAB" objectApiName="Account" density="comfy">
+                        <lightning:layout multipleRows="true">
+                            <lightning:layoutItem size="12">
+                                <lightning:outputField fieldName="Name"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="12">
+                                <lightning:outputField fieldName="Website"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem size="12">
+                                <lightning:outputField fieldName="Industry"/>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </lightning:recordViewForm>
+                </div>
+            </lightning:accordionSection>
+        </lightning:accordion>
+        
+    </lightning:card>
+</aura:component>	
