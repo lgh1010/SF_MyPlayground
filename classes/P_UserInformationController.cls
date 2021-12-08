@@ -2,11 +2,8 @@ public with sharing class P_UserInformationController {
     @AuraEnabled
     public static Map<String, Object> getInit(){
         try {
-            Map<String, String> userInfo = getUserInfo();
-
             return new Map<String, Object> {
-                'userInfo' => userInfo
-                // 'account'  => getAccountInfo(userInfo.get('AccountId'))
+                'userInfo' => getUserInfo()
             };
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
@@ -14,45 +11,65 @@ public with sharing class P_UserInformationController {
     }
 
     @AuraEnabled
-    public static Map<String, String> getUserInfo(){
-        Map<String, String> result = new Map<String, String>();
+    public static UserInfoWrapper getUserInfo(){
+        UserInfoWrapper result = new UserInfoWrapper();
 
         try {
-            User u = [SELECT FirstName, LastName, Username, Email, Contact.AccountId FROM User WHERE Id = :System.UserInfo.getUserId()];
-
-            result.putAll(new Map<String, String>{
-                'Id'        => u.Id,
-                'FirstName' => u.FirstName,
-                'LastName'  => u.LastName,
-                'Username'  => u.Username,
-                'Email'     => u.Email,
-                'AccountId' => u.Contact?.AccountId
-            });
+            User u = [
+                SELECT FirstName, 
+                       LastName, 
+                       Username, 
+                       Email, 
+                       Contact.AccountId
+                FROM User 
+                WHERE Id = :System.UserInfo.getUserId()
+            ];
+            result = new UserInfoWrapper(u);
         } catch (Exception e) {
             String ERROR_MSG = '[' + e.getLineNumber() + '] ' + e.getMessage();
             System.debug(ERROR_MSG);
-            result.put('ERROR_MSG', ERROR_MSG);
+            result.errorMessage = ERROR_MSG;
         }
 
         return result;
     }
 
-    public static Map<String, String> getAccountInfo(String accountId) {
-        Map<String, String> result = new Map<String, String>();
+    class UserInfoWrapper {
+        @AuraEnabled public String id;
+        @AuraEnabled public String firstName;
+        @AuraEnabled public String lastName;
+        @AuraEnabled public String username;
+        @AuraEnabled public String email;
+        @AuraEnabled public String contactId;
+        @AuraEnabled public String accountId;
 
-        try {
-            Account a = [SELECT Name FROM Account WHERE Id = :accountId];
+        @AuraEnabled public String errorMessage;
 
-            result.putAll(new Map<String, String> {
-                'Name' => a.Name
-            });
-        } catch (Exception e) {
-            String ERROR_MSG = '[' + e.getLineNumber() + '] ' + e.getMessage();
-            System.debug(ERROR_MSG);
-            result.put('ERROR_MSG', ERROR_MSG);
+        public UserInfoWrapper(){}
+        public UserInfoWrapper(User u) {
+            this.id = u.Id;
+            this.firstName = u.FirstName;
+            this.lastName = u.LastName;
+            this.userName = u.Username;
+            this.email = u.Email;
+            
+            String contactId = '';
+            if(String.isNotBlank(u.ContactId)) {
+                contactId = u.ContactId;
+            } else {
+                List<Contact> contactList = [SELECT Id FROM Contact LIMIT 1];
+                contactId = contactList.get(0)?.Id;
+            }
+            this.contactId = contactId;
+
+            String accountId = '';
+            if(String.isNotBlank(u.Contact?.AccountId)) {
+                accountId = u.Contact.AccountId;
+            } else {
+                List<Account> accountList = [SELECT Id FROM Account LIMIT 1];
+                accountId = accountList.get(0)?.Id;
+            }
+            this.accountId = accountId;
         }
-
-        return result;
     }
-
 }

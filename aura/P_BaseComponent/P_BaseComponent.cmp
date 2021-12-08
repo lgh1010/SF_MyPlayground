@@ -1,0 +1,5 @@
+<aura:component implements="flexipage:availableForAllPageTypes"
+                extensible="true"
+                abstract="true">
+
+</aura:component>	

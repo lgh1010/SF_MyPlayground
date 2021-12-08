@@ -4,19 +4,17 @@
     <aura:handler name="init" value="{!this}" action="{!c.init}"/>
 
     <aura:attribute name="userInfo" type="Object"/>
-    <aura:attribute name="contactInfo" type="Object"/>
-    <aura:attribute name="accountInfo" type="Object"/>
 
     <lightning:card title="User Information">
-        <!-- <p class="slds-p-horizontal_small">
-            <h5>Name : {!v.userInfo.FirstName}&nbsp;{!v.userInfo.LastName}</h5>
-            <h5>Username : {!v.userInfo.Username}</h5>
-            <h5>Email : {!v.userInfo.Email}</h5>
-        </p> -->
+        <p class="slds-p-horizontal_small">
+            <h5>Name : {!v.userInfo.firstName}&nbsp;{!v.userInfo.lastName}</h5>
+            <h5>Username : {!v.userInfo.username}</h5>
+            <h5>Email : {!v.userInfo.email}</h5>
+        </p>
         <lightning:accordion allowMultipleSectionsOpen="true" activeSectionName="section_user">
             <lightning:accordionSection name="section_user" label="User">
                 <div>
-                    <lightning:recordViewForm recordId="{!v.userInfo.Id}" objectApiName="User" density="comfy">
+                    <lightning:recordViewForm recordId="{!v.userInfo.id}" objectApiName="User" density="comfy">
                         <lightning:layout multipleRows="true">
                             <lightning:layoutItem size="12">
                                 <lightning:outputField fieldName="Name"/>
@@ -30,7 +28,7 @@
             </lightning:accordionSection>
             <lightning:accordionSection name="section_contact" label="Contact">
                 <div>
-                    <lightning:recordViewForm recordId="0035j000009vpZDAAY" objectApiName="Contact" density="comfy">
+                    <lightning:recordViewForm recordId="{!v.userInfo.contactId}" objectApiName="Contact" density="comfy">
                         <lightning:layout multipleRows="true">
                             <lightning:layoutItem size="12">
                                 <lightning:outputField fieldName="Phone"/>
@@ -47,7 +45,7 @@
             </lightning:accordionSection>
             <lightning:accordionSection name="section_account" label="Account">
                 <div>
-                    <lightning:recordViewForm recordId="0015j00000Choh6AAB" objectApiName="Account" density="comfy">
+                    <lightning:recordViewForm recordId="{!v.userInfo.accountId}" objectApiName="Account" density="comfy">
                         <lightning:layout multipleRows="true">
                             <lightning:layoutItem size="12">
                                 <lightning:outputField fieldName="Name"/>
@@ -63,6 +61,5 @@
                 </div>
             </lightning:accordionSection>
         </lightning:accordion>
-        
     </lightning:card>
 </aura:component>	
