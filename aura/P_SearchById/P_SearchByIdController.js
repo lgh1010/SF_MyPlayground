@@ -8,7 +8,7 @@
         }    
     },
     search : function(component, event, helper) {
-        console.log('search')
+        var inputId = component.get("v.inputId")
     }
 
 })
