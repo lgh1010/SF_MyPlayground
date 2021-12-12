@@ -74,6 +74,23 @@ public with sharing class P_BaseController {
         return result;
     }
 
+    public List<SelectOption> getPicklistOptions(String sObjectName, String fieldName, Boolean activeOnly) {
+        List<SelectOption> result = new List<SelectOption>();
+
+        try {
+            for(Schema.PicklistEntry e : Schema.getGlobalDescribe().get(sObjectName).getDescribe().fields.getMap().get(fieldName).getDescribe().getPicklistValues()) {
+                if(activeOnly && e.isActive()) {
+                    result.add(new SelectOption(e.getLabel(), e.getValue()));
+                }
+            }
+        } catch(Exception e) {
+            String ERROR_MSG = '[' + e.getLineNumber() + '] ' + e.getMessage();
+            System.debug(ERROR_MSG);
+        }
+
+        return result;
+    }
+
     public String translate(String language, String label, String en, String ko, String cn, String jp) {
         String result = label;
 
@@ -119,10 +136,53 @@ public with sharing class P_BaseController {
             if(String.isBlank(result)) {
                 if(translateIsExistMap.get('en')) {
                     result = en;
+                } else {
+                    result = '???';
                 }
             }
         } catch(Exception e) {
+            String ERROR_MSG = '[' + e.getLineNumber() + '] ' + e.getMessage();
+            System.debug(ERROR_MSG);
             result = '==ERROR==';
+        }
+
+        return result;
+    }
+
+    public List<Object> getSObjectHistory(String recordId, List<String> fields, List<String> dataTypes) {
+        List<Object> result = new List<Object>();
+
+        String soql = 'SELECT Id, '
+                    + '       Field, '
+                    + '       OldValue, '
+                    + '       NewValue, '
+                    + '       DataType, '
+                    + '       CreatedDate ';
+        String query_from = '';
+        String query_where = ' WHERE Id != null ';
+        String query_order = ' ORDER BY Created DESC ';
+
+        try {
+            String sObj = String.valueOf(Id.valueOf(recordId).getSobjectType());
+
+            String historyObj = sObj + 'History';
+            if(sObj.endsWith('__c')) {
+                historyObj = sObj.replace(sObj.substring(sObj.length() - 3, sObj.length()), '__History');
+                query_where += ' AND ParentId = :recordId ';
+            }
+            query_from = ' FROM ' + historyObj;
+            
+            if(!fields.isEmpty()) {
+                query_where += ' AND Field IN :fields ';
+            }
+            if(!dataTypes.isEmpty()) {
+                query_where += ' AND DataType IN :dataTypes ';
+            }
+
+            result.addAll(Database.query(soql + query_from + query_where + query_order));
+        } catch(Exception e) {
+            String ERROR_MSG = '[' + e.getLineNumber() + '] ' + e.getMessage();
+            System.debug(ERROR_MSG);
         }
 
         return result;
