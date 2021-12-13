@@ -74,6 +74,18 @@ public with sharing class P_BaseController {
         return result;
     }
 
+    public String getSObjectNameByRecordId(String recordId) {
+        String result = '';
+
+        try {
+            result = Id.valueOf(recordId).getSobjectType().getDescribe().getName();
+        } catch(Exception e) {
+
+        }
+
+        return result;
+    }
+
     public List<SelectOption> getPicklistOptions(String sObjectName, String fieldName, Boolean activeOnly) {
         List<SelectOption> result = new List<SelectOption>();
 
