@@ -74,13 +74,14 @@ public with sharing class P_BaseController {
         return result;
     }
 
-    public String getSObjectNameByRecordId(String recordId) {
+    public static String getSObjectNameByRecordId(String recordId) {
         String result = '';
 
         try {
             result = Id.valueOf(recordId).getSobjectType().getDescribe().getName();
         } catch(Exception e) {
-
+            String ERROR_MSG = '[' + e.getLineNumber() + '] ' + e.getMessage();
+            System.debug(ERROR_MSG);
         }
 
         return result;
@@ -193,6 +194,33 @@ public with sharing class P_BaseController {
 
             result.addAll(Database.query(soql + query_from + query_where + query_order));
         } catch(Exception e) {
+            String ERROR_MSG = '[' + e.getLineNumber() + '] ' + e.getMessage();
+            System.debug(ERROR_MSG);
+        }
+
+        return result;
+    }
+
+    @AuraEnabled
+    public static Map<String, List<String>> getReferenceFields(String recordId) {
+        Map<String, List<String>> result = new Map<String, List<String>>();
+
+        try {
+            String sObjName = getSObjectNameByRecordId(recordId);
+            Map<String, Schema.SObjectField> fieldMap = Schema.getGlobalDescribe().get(sObjName).getDescribe().fields.getMap();
+            for(String label : fieldMap.keySet()) {
+                if(!label.endsWith('id') && fieldMap.get(label).getDescribe().getType() == Schema.DisplayType.REFERENCE) {
+                    for(Schema.SObjectType objType : fieldMap.get(label).getDescribe().getReferenceTo()) {
+                        String parentObj = objType.getDescribe().getName();
+                        if(result.containsKey(parentObj) && !result.get(parentObj).isEmpty()) {
+                            result.put(parentObj, (List<String>)result.get(parentObj).add(label));
+                        } else {
+                            result.put(parentObj, new List<String>{label});
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
             String ERROR_MSG = '[' + e.getLineNumber() + '] ' + e.getMessage();
             System.debug(ERROR_MSG);
         }
