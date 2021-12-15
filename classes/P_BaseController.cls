@@ -228,6 +228,21 @@ public with sharing class P_BaseController {
         return result;
     }
 
+    @AuraEnabled
+    public static String getLead(String recordId) {
+        String result = '';
+
+        try {
+            for(Lead l : [SELECT Id, Name FROM Lead WHERE Id = :recordId]) {
+                result += l.Name + ' ';
+            }
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+
+        return result;
+    }
+
     public class SelectOption {
         @AuraEnabled public String label       {get;set;}
         @AuraEnabled public String value       {get;set;}
@@ -244,4 +259,5 @@ public with sharing class P_BaseController {
             this.description = description;
         }
     }
+
 }
