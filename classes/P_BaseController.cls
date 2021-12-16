@@ -243,6 +243,27 @@ public with sharing class P_BaseController {
         return result;
     }
 
+    @AuraEnabled
+    public static string getDateSinceCreation(String recordId) {
+        String result = '';
+
+        try {
+            String soql = 'SELECT {0} FROM {1} WHERE {2}';
+            String fields = 'CreatedDate';
+            String objName = getSObjectNameByRecordId(recordId);
+            String condition = 'Id = ' + recordId;
+
+            for(SObject obj : Database.query(String.format(soql, new List<Object>{fields, objName, condition}))) {
+                result = obj.CreatedDate.format('yyyy-MM-dd');
+            }
+        } catch (Exception e) {
+            String ERROR_MSG = '[' + e.getLineNumber() + '] ' + e.getMessage();
+            System.debug(ERROR_MSG);
+        }
+
+        return result;
+    }
+
     public class SelectOption {
         @AuraEnabled public String label       {get;set;}
         @AuraEnabled public String value       {get;set;}
