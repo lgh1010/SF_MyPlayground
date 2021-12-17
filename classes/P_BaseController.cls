@@ -254,7 +254,12 @@ public with sharing class P_BaseController {
             String condition = 'Id = ' + recordId;
 
             for(SObject obj : Database.query(String.format(soql, new List<Object>{fields, objName, condition}))) {
-                result = obj.CreatedDate.format('yyyy-MM-dd');
+                switch on objName {
+                    when 'Lead' {
+                        Lead target = (Lead)obj;
+                        result = target.CreatedDate.format('yyyy-MM-dd');
+                    }
+                }
             }
         } catch (Exception e) {
             String ERROR_MSG = '[' + e.getLineNumber() + '] ' + e.getMessage();
