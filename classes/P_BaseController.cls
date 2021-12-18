@@ -269,6 +269,11 @@ public with sharing class P_BaseController {
         return result;
     }
 
+    @AuraEnabled
+    public static Date getToday() {
+        return Date.today();
+    }
+
     public class SelectOption {
         @AuraEnabled public String label       {get;set;}
         @AuraEnabled public String value       {get;set;}
