@@ -273,6 +273,12 @@ public with sharing class P_BaseController {
     public static Date getToday() {
         return Date.today();
     }
+    
+    @AuraEnabled
+    public static Integer getDaysBetween(String leadId) {
+        List<Lead> l = [SELECT CreatedDate FROM Lead WHERE Id = :leadId];
+        return (system.today()).daysBetween(date.valueOf(l.get(0).CreatedDate));
+    }
 
     public class SelectOption {
         @AuraEnabled public String label       {get;set;}
